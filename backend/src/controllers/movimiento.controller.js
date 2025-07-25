@@ -94,10 +94,8 @@ async function getMovimientosFiltrados(req, res) {
 async function getUltimosMovimientos(req, res) {
   try {
 
-    console.log("asdas1");
+
     const [movimientos, err] = await movimientoService.getUltimosMovimientos();
-    console.log("movimientos", movimientos);
-    console.log("errror", err);
     if (err) return respondError(res, 500, "Error al obtener los últimos movimientos", err.message);
 
     return respondSuccess(res, 200, movimientos);

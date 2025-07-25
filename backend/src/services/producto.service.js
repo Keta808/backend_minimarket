@@ -7,13 +7,11 @@ import { handleError } from "../utils/errorHandler.js";
 // Crear productos
 async function createProducto(data) {
   try {
-    console.log(data);
+
     const existe = await Producto.findOne({
       nombre_base: data.nombre_base,
       presentacion: data.presentacion,
     });
-
-    console.log("existe: ", existe);
     
     if (existe) {
       return [null, new Error("Ya existe un producto con el mismo nombre y presentación")];

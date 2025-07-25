@@ -21,14 +21,14 @@ async function getUsers() {
 
 async function createUser(user) {
   try {
-    console.log("user",user );
+  
     const { username, email, password, roles } = user;
 
     const userFound = await User.findOne({ email: user.email });
     if (userFound) return [null, "El usuario ya existe"];
 
     const rolesFound = await Role.find({ name: { $in: roles } });
-    console.log('rolesfound',rolesFound );
+    
     if (rolesFound.length === 0) return [null, "El rol no existe"];
     const myRole = rolesFound.map((role) => role._id);
 

@@ -125,12 +125,7 @@ async function deleteUser(req, res) {
 
 async function changePassword(req, res) {
   try {
-
-    console.log("controller changep assowrd");
     const { params, body } = req;
-
-    console.log("params : ",params);
-    console.log("body ", body);
     // Validar ID del usuario
     const { error: idError } = userIdSchema.validate(params);
     if (idError) return respondError(res, 400, idError.message);

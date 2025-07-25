@@ -47,7 +47,7 @@ async function login(user) {
       { email: userFound.email },
       REFRESH_JWT_SECRET,
       {
-        expiresIn: "7d", // 7 días
+        expiresIn: "30d", 
       },
     );
 
