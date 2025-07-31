@@ -24,8 +24,23 @@ async function setupServer() {
     /** Instancia de la aplicacion */
     const server = express();
     server.disable("x-powered-by");
-    // Agregamos los cors
-    server.use(cors({ credentials: true, origin: true }));
+          // Agregamos los cors
+        const allowedOrigins = [
+        'http://localhost:5173',
+        'https://frontend-minimarket.vercel.app',
+      ];
+
+      server.use(cors({
+        origin: function(origin, callback) {
+          if (!origin) return callback(null, true); 
+          if (allowedOrigins.indexOf(origin) === -1) {
+            const msg = 'El CORS no permite este origen.';
+            return callback(new Error(msg), false);
+          }
+          return callback(null, true);
+        },
+        credentials: true,
+      }));
     // Agrega el middleware para el manejo de datos en formato URL
     server.use(urlencoded({ extended: true }));
     // Agrega el middleware para el manejo de datos en formato JSON
