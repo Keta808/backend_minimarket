@@ -11,6 +11,7 @@ const productoBodySchema = Joi.object({
   stock_minimo: Joi.number().min(0).optional(),
   codigo_interno: Joi.string().optional().allow(""),
   activo: Joi.boolean().required(),
+  usuario: Joi.string().hex().length(24).required(),
 });
 
 const productoIdSchema = Joi.object({
