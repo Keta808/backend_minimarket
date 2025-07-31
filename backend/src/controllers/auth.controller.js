@@ -74,7 +74,7 @@ async function refresh(req, res) {
 
     if (errorToken) return respondError( res, 400, errorToken);
 
-    respondSuccess( res, 200, "success",{ accessToken });
+    respondSuccess( res, 200, { accessToken },"succes xDs");
   } catch (error) {
     handleError(error, "auth.controller -> refresh");
     respondError( res, 400, error.message);
