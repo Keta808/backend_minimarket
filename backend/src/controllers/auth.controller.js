@@ -18,18 +18,20 @@ async function login(req, res) {
   try {
     const { body } = req;
     const { error: bodyError } = authLoginBodySchema.validate(body);
-    if (bodyError) return respondError(req, res, 400, bodyError.message);
+    if (bodyError) return respondError( res, 400, bodyError.message);
 
     const [accessToken, refreshToken, errorToken] =
       await AuthService.login(body);
 
-    if (errorToken) return respondError(req, res, 400, errorToken);
+    if (errorToken) return respondError( res, 400, errorToken);
 
-    // * Existen mas opciones de seguirdad para las cookies *//
-    res.cookie("jwt", refreshToken, {
-      httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 días
-    });
+    
+        res.cookie("jwt", refreshToken, {
+        httpOnly: true,
+        secure: true, // solo si usas HTTPS
+        sameSite: "None", // o "Strict"/"Lax" dependiendo del caso
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
+      });
 
     respondSuccess( res, 200, { accessToken });
   } catch (error) {
@@ -66,13 +68,13 @@ async function logout(req, res) {
 async function refresh(req, res) {
   try {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return respondError(req, res, 400, "No hay token");
+    if (!cookies?.jwt) return respondError( res, 400, "No hay token");
 
     const [accessToken, errorToken] = await AuthService.refresh(cookies);
 
-    if (errorToken) return respondError(req, res, 400, errorToken);
+    if (errorToken) return respondError( res, 400, errorToken);
 
-    respondSuccess( res, 200, { accessToken });
+    respondSuccess( res, 200, "success",{ accessToken });
   } catch (error) {
     handleError(error, "auth.controller -> refresh");
     respondError( res, 400, error.message);
