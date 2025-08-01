@@ -126,15 +126,15 @@ async function deleteUser(req, res) {
 async function changePassword(req, res) {
   try {
     const { params, body } = req;
-    // Validar ID del usuario
+   
     const { error: idError } = userIdSchema.validate(params);
     if (idError) return respondError(res, 400, idError.message);
 
-    // Validar cuerpo de la solicitud
+ 
     const { error: bodyError } = userPasswordChangeSchema.validate(body);
     if (bodyError) return respondError(res, 400, bodyError.message);
 
-    // Lógica para cambiar contraseña
+  
     const [result, errorChange] = await UserService.changePassword(params.id, body);
     if (errorChange) return respondError(res, 400, errorChange);
 

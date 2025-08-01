@@ -16,15 +16,14 @@ async function createProducto(data) {
       return [null, new Error("Ya existe un producto con el mismo nombre y presentación")];
     }
 
-    // Crear y guardar el producto
     const producto = new Producto(data);
     const saved = await producto.save();
 
-    // Si stock_actual > 0, crear movimiento de entrada
+   
     if (saved.stock_actual > 0) {
       const movimiento = new Movimiento({
         tipo: "entrada",
-        producto: saved._id, // Referencia al ID del producto
+        producto: saved._id, 
         cantidad: saved.stock_actual,
         motivo: "Ingreso stock nuevo producto",
         usuario: data.usuario,
@@ -61,8 +60,8 @@ async function getProductoById(id) {
 
 async function updateProducto(id, data) {
   try {
-    const usuarioId = data.usuario; // Extraer usuario
-    delete data.usuario; // Lo quitamos para que no se actualice en Producto
+    const usuarioId = data.usuario; 
+    delete data.usuario; 
 
     const productoOriginal = await Producto.findById(id);
     if (!productoOriginal) {
@@ -88,9 +87,9 @@ async function updateProducto(id, data) {
       await movimiento.save();
     }
 
-    console.log("data",data);
+  
     const updated = await Producto.findByIdAndUpdate(id, data, { new: true });
-    console.log("updated", updated );   
+    
     return [updated, null];
   } catch (error) {
     return [null, handleError(error)];

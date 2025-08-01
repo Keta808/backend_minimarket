@@ -2,10 +2,9 @@
 
 import { respondSuccess, respondError } from "../utils/resHandler.js";
 import { handleError } from "../utils/errorHandler.js";
-
-/** Servicios de autenticación */
 import AuthService from "../services/auth.service.js";
 import { authLoginBodySchema } from "../schema/auth.schema.js";
+
 
 /**
  * Inicia sesión con un usuario.
@@ -28,9 +27,9 @@ async function login(req, res) {
     
         res.cookie("jwt", refreshToken, {
         httpOnly: true,
-        secure: true, // solo si usas HTTPS
-        sameSite: "None", // o "Strict"/"Lax" dependiendo del caso
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
+        secure: true, 
+        sameSite: "None", 
+        maxAge: 30 * 24 * 60 * 60 * 1000, 
       });
 
     respondSuccess( res, 200, { accessToken });
@@ -49,15 +48,18 @@ async function login(req, res) {
  */
 async function logout(req, res) {
   try {
-    const cookies = req.cookies;
-    if (!cookies?.jwt) return respondError(req, res, 400, "No hay token");
-    res.clearCookie("jwt", { httpOnly: true });
-    respondSuccess( res, 200, { message: "Sesión cerrada correctamente" });
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+    respondSuccess(res, 200, { message: "Sesión cerrada correctamente" });
   } catch (error) {
     handleError(error, "auth.controller -> logout");
-    respondError( res, 400, error.message);
+    respondError(res, 400, error.message);
   }
 }
+
 
 /**
  * @name refresh
@@ -68,18 +70,18 @@ async function logout(req, res) {
 async function refresh(req, res) {
   try {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return respondError( res, 400, "No hay token");
 
-    const [accessToken, errorToken] = await AuthService.refresh(cookies);
-
-    if (errorToken) return respondError( res, 400, errorToken);
-
-    respondSuccess( res, 200, { accessToken },"succes xDs");
+    if (!cookies?.jwt) return respondError(res, 400, "No hay token");
+    const [accessToken, user, errorToken] = await AuthService.refresh(cookies);
+    if (errorToken) return respondError(res, 400, errorToken);
+  
+    respondSuccess(res, 200, { accessToken, user }, "Token refrescado");
   } catch (error) {
     handleError(error, "auth.controller -> refresh");
-    respondError( res, 400, error.message);
+    respondError(res, 400, error.message);
   }
 }
+
 
 export default {
   login,

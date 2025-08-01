@@ -2,7 +2,7 @@
 import { Schema, model } from "mongoose";
 import ROLES from "../constants/roles.constants.js";
 
-// Crea el esquema de la coleccion 'roles'
+
 const roleSchema = new Schema(
   {
     name: {

@@ -33,7 +33,7 @@ const productoSchema = new mongoose.Schema(
        
     },
     {
-    timestamps: true,     // añade creadoEn y actualizadoEn
+    timestamps: true,     
     versionKey: false,
   }
 );

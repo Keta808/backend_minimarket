@@ -7,7 +7,7 @@ import authenticationMiddleware from "../middlewares/authentication.middleware.j
 
 const router = express.Router();
 router.use(authenticationMiddleware);
-// Rutas base: /api/categorias
+
 
 router.get("/getCategoriasConDetalleProductos",isTrabajador, categoriaController.getCategoriasConDetalleProductos);
 router.get("/",isTrabajador, categoriaController.getAllCategorias);

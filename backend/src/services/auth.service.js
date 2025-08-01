@@ -18,14 +18,12 @@ import { handleError } from "../utils/errorHandler.js";
 async function login(user) {
   try {
     const { email, password } = user;
-
     const userFound = await User.findOne({ email: email })
       .populate("roles")
       .exec();
     if (!userFound) {
       return [null, null, "El usuario y/o contraseña son incorrectos"];
     }
-
     const matchPassword = await User.comparePassword(
       password,
       userFound.password,
@@ -63,41 +61,26 @@ async function login(user) {
  * @function refresh
  * @param {Object} cookies - Objeto de cookies
  */
-async function refresh(cookies) {
+const refresh = async (cookies) => {
   try {
-    if (!cookies.jwt) return [null, "No hay autorización"];
-    const refreshToken = cookies.jwt;
+    const token = cookies.jwt;
+    if (!token) return [null, null, "No hay token"];
+    const decoded = jwt.verify(token, process.env.REFRESH_JWT_SECRET);
+    
+    const user = await User.findOne({ email: decoded.email }).select("-password").populate("roles");
+  
+    if (!user) return [null, null, "Usuario no encontrado"];
+      const accessToken = jwt.sign(
+        { id: user._id, email: user.email, roles: user.roles },
+        process.env.ACCESS_JWT_SECRET,
+        { expiresIn: "15m" }
+      );
 
-    const accessToken = await jwt.verify(
-      refreshToken,
-      REFRESH_JWT_SECRET,
-      async (err, user) => {
-        if (err) return [null, "La sesion a caducado, vuelva a iniciar sesion"];
-
-        const userFound = await User.findOne({
-          email: user.email,
-        })
-          .populate("roles")
-          .exec();
-
-        if (!userFound) return [null, "No usuario no autorizado"];
-
-        const accessToken = jwt.sign(
-          { email: userFound.email, roles: userFound.roles },
-          ACCESS_JWT_SECRET,
-          {
-            expiresIn: "1d",
-          },
-        );
-
-        return [accessToken, null];
-      },
-    );
-
-    return accessToken;
+    return [accessToken, user, null];
   } catch (error) {
-    handleError(error, "auth.service -> refresh");
+    console.error("❌ Error en refresh token:", error.message);
+    return [null, null, "Token inválido"];
   }
-}
+};
 
 export default { login, refresh };
